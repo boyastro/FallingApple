@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Falling Apple</title>
+  <style>
+    canvas {
+      background-color: #87CEEB; /* Màu nền trời */
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas" width="400" height="600"></canvas>
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Tọa độ của quả táo
+    let appleY = 200; // Vị trí ban đầu của quả táo (cao hơn thân cây)
+    let appleX = 140; // Xác định vị trí x của quả táo, căn giữa cây
+    let apple2Y = 200; // Vị trí ban đầu của quả táo (cao hơn thân cây)
+    let apple2X = 200; // Xác định vị trí x của quả táo, căn giữa cây
+    const appleWidth = 40;
+    const appleHeight = 40;
+
+    // Biến tốc độ rơi
+    let speedY = 2; // Tốc độ rơi ban đầu
+    let isFalling1 = false;
+    let isFalling2 = false;
+
+    // Tạo đối tượng ảnh cho cây và quả táo
+    const treeImage = new Image();
+    const appleImage = new Image();
+    
+    // Đặt nguồn cho ảnh cây và quả táo
+    treeImage.src = 'tree.png'; // Đường dẫn ảnh cây
+    appleImage.src = 'apple.png'; // Đường dẫn ảnh quả táo
+
+    canvas.addEventListener('click', (event) => {
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = event.clientX - rect.left;
+      const mouseY = event.clientY - rect.top;
+
+      // Kiểm tra xem vị trí click có nằm trong vùng của quả táo không
+      if (
+        mouseX >= appleX &&
+        mouseX <= appleX + appleWidth &&
+        mouseY >= appleY &&
+        mouseY <= appleY + appleHeight
+      ) {
+        // Bắt đầu rơi khi click vào quả táo
+        isFalling1 = true;
+      }
+
+      if (
+        mouseX >= apple2X &&
+        mouseX <= apple2X + appleWidth &&
+        mouseY >= apple2Y &&
+        mouseY <= apple2Y + appleHeight
+      ) {
+        // Bắt đầu rơi khi click vào quả táo
+        isFalling2 = true;
+      }
+
+    });
+
+    // Hàm cập nhật để vẽ lại vị trí của quả táo
+    function update() {
+      // Xóa canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Vẽ cây
+      ctx.drawImage(treeImage, 100, 100, 200, 400); // Điều chỉnh vị trí và kích thước phù hợp
+
+      // Vẽ quả táo
+      ctx.drawImage(appleImage, appleX, appleY, 40, 40); // Điều chỉnh kích thước quả táo
+      ctx.drawImage(appleImage, apple2X, apple2Y, 40, 40);
+      // Cập nhật vị trí quả táo
+      if (isFalling1) {
+        appleY += speedY;
+      }
+
+      if (isFalling2) {
+        apple2Y += speedY;
+      }
+
+      // Sự kiện click vào canvas để kiểm tra vị trí nhấp chuột
+
+      // Điều kiện nếu quả táo chạm đất, cho dừng
+      if(appleY >= canvas.height - 160){
+        isFalling1 = false;
+      }
+
+      if(apple2Y >= canvas.height - 160){
+        isFalling2 = false;
+      }
+
+      if (appleY < canvas.height - 160 || apple2Y < canvas.height - 160) { // Giả sử quả táo chạm đất ở y = canvas.height - 40
+        requestAnimationFrame(update); // Tiếp tục lặp lại hàm update để tạo hiệu ứng chuyển động
+      }
+
+    }
+
+    // Đảm bảo ảnh tải xong trước khi bắt đầu hoạt động
+    treeImage.onload = () => {
+      appleImage.onload = () => {
+        update(); // Bắt đầu vẽ khi ảnh đã tải
+      }
+    };
+  </script>
+</body>
+</html>
